@@ -1,6 +1,6 @@
 package za.ac.cput.service;
 
-public class RoomTypeServiceImpl
+public class RoomTypeService
 {
 
 }
