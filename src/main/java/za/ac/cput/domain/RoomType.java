@@ -1,14 +1,18 @@
 package za.ac.cput.domain;
 
-import java.util.Objects;
+import jakarta.persistence.*;
 
+import java.util.Objects;
+@Entity
 public class RoomType
 {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long typeId;
     private String roomtypeName;
     private double roomPrice;
 
-    private RoomType()
+    protected RoomType()
     {
 
     }
@@ -19,6 +23,8 @@ public class RoomType
         this.roomtypeName = builder.roomtypeName;
         this.roomPrice = builder.roomPrice;
     }
+
+
 
     public long getTypeId()
     {

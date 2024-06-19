@@ -1,15 +1,21 @@
 package za.ac.cput.domain;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
+@Entity
 public class Room
 {
+    @Id
     private String roomNumber;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "roomTypeId", referencedColumnName = "typeId")
     private RoomType roomType;
     private int capacity;
     private boolean isOccupied;
 
-    private Room() {
+    protected Room() {
     }
 
     private Room(Builder builder) {
