@@ -3,8 +3,6 @@ package za.ac.cput.service;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.RoomType;
 import za.ac.cput.repository.RoomTypeRepository;
-import java.util.Optional;
-import za.ac.cput.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
