@@ -54,7 +54,7 @@
 import axios from "axios";
 import { PriceGroup } from "@/enums/PriceGroup";
 
-axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = 'http://localhost:8080/api/roomtypes/{{id}}';
 
 axios.interceptors.request.use(
     config => {

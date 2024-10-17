@@ -6,7 +6,7 @@
       Discover the perfect blend of luxury, comfort, and sophistication at Martoue Hotel. Nestled in the heart of Capetown, our boutique hotel offers an oasis of tranquility amidst the vibrant city. Whether you're visiting for business or leisure, our exceptional service, beautifully designed rooms, and exquisite amenities ensure a stay that is nothing short of extraordinary. We invite you to experience the warmth and elegance that define Eleve Hotel, where every detail is crafted to elevate your stay.
     </p>
     <div class="image-gallery">
-      <img src="@/assets/Images/Defaults/room.jpg" alt="Luxury Room" />
+      <img src="http://localhost:8080/api/roomtypes/1/image" alt="Luxury Room" />
       <img src="@/assets/Images/Defaults/res1.jpg" alt="Exquisite Dining" />
       <img src="@/assets/Images/Defaults/vist1.jpg" alt="Stunning Views" />
     </div>
