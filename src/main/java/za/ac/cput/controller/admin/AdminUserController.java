@@ -18,11 +18,11 @@ public class AdminUserController {
     @Autowired
     private UserServiceImpl userService;
 
-    @GetMapping("/list/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAll();
-        return ResponseEntity.ok(users);
-    }
+//    @GetMapping("/list/all")
+//    public ResponseEntity<List<User>> getAllUsers() {
+//        List<User> users = userService.getAll();
+//        return ResponseEntity.ok(users);
+//    }
 
     @GetMapping("/read/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Integer id) {

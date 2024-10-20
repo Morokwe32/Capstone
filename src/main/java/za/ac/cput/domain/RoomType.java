@@ -1,9 +1,6 @@
 package za.ac.cput.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "roomtype")
@@ -18,7 +15,12 @@ public class RoomType {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Lob // Used to indicate that the picture is a large object, like an image.
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] picture;
+
     // Getters and setters
+
     public Integer getId() {
         return id;
     }
@@ -41,5 +43,13 @@ public class RoomType {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public byte[] getPicture() {
+        return picture;
+    }
+
+    public void setPicture(byte[] picture) {
+        this.picture = picture;
     }
 }

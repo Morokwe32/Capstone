@@ -20,5 +20,5 @@ public interface IUserService extends IService<User, Integer> {
 
     boolean delete(Integer id);
 
-    ArrayList<User> getAll();
+//    ArrayList<User> getAll();
 }
