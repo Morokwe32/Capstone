@@ -40,6 +40,17 @@
           </select>
         </div>
 
+        <div>
+          <label>
+            Picture:
+            <input
+                type="file"
+                @change="setPicture($event.target.files[0])"
+            />
+          </label>
+        </div>
+
+
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
         <div class="button-container">
           <button class="confirm-button button" type="submit"><i class="fas fa-check"></i> Confirm</button>
