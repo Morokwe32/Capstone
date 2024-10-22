@@ -2,17 +2,24 @@ package za.ac.cput.controller;
 
 /**
  * UserController.java
- *Controller of User Class
- *Author:Moegamat Isgak Abzal
- *Student Number: 221321810
+ * Controller for User Class
+ * Author: Moegamat Isgak Abzal
+ * Student Number: 221321810
  * */
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder; // Ensure you import PasswordEncoder
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.domain.User;
+import za.ac.cput.service.JwtService; // Ensure you import your JwtService
 import za.ac.cput.service.impl.UserServiceImpl;
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -20,6 +27,12 @@ public class UserController {
     @Autowired
     @Qualifier("userServiceImpl")
     private UserServiceImpl userService;
+
+    @Autowired
+    private JwtService jwtService; // Add JwtService for JWT generation
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; // Add PasswordEncoder for password matching
 
     @CrossOrigin(origins = "http://localhost:3315")
     @PostMapping("/register")
@@ -30,37 +43,31 @@ public class UserController {
         String email = registrationRequest.getEmail();
         System.out.println("Username: " + username);
         System.out.println("This user is now registered");
-        User createdUser = userService.create(registrationRequest);
-        // Implement the logic to handle user registration
-        // Retrieve the user details from the request and process it
-        // Return an appropriate response, such as a success message or error message
-        return createdUser;
+        return userService.create(registrationRequest);
     }
 
-
     @PostMapping("/login")
-    public String login(@RequestBody User loginRequest) {
-        // Implement the logic to handle user login
-        String username = loginRequest.getUserName();
+    public ResponseEntity<LoginResponse> login(@RequestBody User loginRequest) {
+        String username = loginRequest.getEmail();
         String password = loginRequest.getPassword();
-        return "User logged in successfully";
 
-/*
-        // Authenticate the user
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, password);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-*/
-        /*
-        // Return an appropriate response
-        if (authentication.isAuthenticated()) {
-            // User is authenticated
-            return "User logged in successfully";
-        } else {
-            // Authentication failed
-            return "Authentication failed";
-        }*/
+        try {
+            UserDetails userDetails = userService.loadUserByUsername(username);
+            System.out.println("User found: " + userDetails.getUsername());
+            System.out.println("Stored password: " + userDetails.getPassword());
+            System.out.println("Input password: " + password);
 
+            if (passwordEncoder.matches(password, userDetails.getPassword())) {
+                String token = jwtService.generateToken(userDetails.getUsername(), List.of("USER"));
+                return ResponseEntity.ok(new LoginResponse(token));
+            } else {
+                System.out.println("Password mismatch.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+        } catch (UsernameNotFoundException e) {
+            System.out.println("User not found: " + username);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
 
 
@@ -68,16 +75,28 @@ public class UserController {
     public User readUser(@PathVariable Integer userId) {
         System.out.println("/api/admin/users/read was triggered");
         System.out.println("UserService was created...attempting to read user...");
-        User readUser = userService.read(userId);
-        return readUser;
+        return userService.read(userId);
     }
 
     @GetMapping("/{userId}")
     public User read(@PathVariable Integer userId) {
         System.out.println("/api/user/{userId} was triggered");
-        User user = userService.read(userId);
-        return user;
+        return userService.read(userId);
     }
-
 }
 
+class LoginResponse {
+    private String token;
+
+    public LoginResponse(String token) {
+        this.token = token;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+}

@@ -1,45 +1,43 @@
 package za.ac.cput.service.impl;
 
-/**
- * UserServerImpl.java
- *ServerImpl of User Class
- *Author:Moegamat Isgak Abzal
- *Student Number: 221321810
- * */
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.User;
 import za.ac.cput.factory.UserFactory;
 import za.ac.cput.repository.UserRepository;
 import za.ac.cput.service.IUserService;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
-@Service("userServiceImpl")
-public class UserServiceImpl implements IUserService {
-    private UserRepository repository = null;
-    private UserFactory userFactory;
+@Service
+public class UserServiceImpl implements IUserService, UserDetailsService {
+
+    private final UserRepository repository;
+    private final UserFactory userFactory;
 
     @Autowired
-    private UserServiceImpl(UserRepository repository, UserFactory userFactory) {
+    private PasswordEncoder passwordEncoder; // Autowire PasswordEncoder
+
+    @Autowired
+    public UserServiceImpl(UserRepository repository, UserFactory userFactory) {
         this.repository = repository;
         this.userFactory = userFactory;
     }
 
-
     @Override
     public User create(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encode password before saving
         User newUser = userFactory.create(user);
         return repository.save(newUser);
     }
 
-
     @Override
     public User read(Integer id) {
-        Optional<User> optionalUser = this.repository.findById(id);
-        return optionalUser.orElse(null);
+        return repository.findById(id).orElse(null);
     }
 
     @Override
@@ -51,20 +49,34 @@ public class UserServiceImpl implements IUserService {
         return null;
     }
 
-
     @Override
     public boolean delete(Integer id) {
-        if (this.repository.existsById(id)) {
-            this.repository.deleteById(id);
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
             return true;
         }
         return false;
     }
 
-    @Override
-    public ArrayList<User> getAll() {
-        return (ArrayList<User>) this.repository.findAll();
+    // Method to retrieve User by email (used for login)
+    public Optional<User> findByEmail(String email) {
+        return repository.findByEmail(email);
     }
 
+    // Implement loadUserByUsername for security
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        System.out.println("Looking for user with email: " + email);
+        User foundUser = repository.findByEmail(email)
+                .orElseThrow(() -> {
+                    System.out.println("User not found with email: " + email);
+                    return new UsernameNotFoundException("User not found with email: " + email);
+                });
 
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(foundUser.getEmail())
+                .password(foundUser.getPassword())
+                .roles("USER") // Default role for users
+                .build();
+    }
 }
